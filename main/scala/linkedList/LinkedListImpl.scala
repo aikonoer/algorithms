@@ -106,6 +106,7 @@ class LinkedListImpl[T] {
   }
 
   def insert(value: T, index: Int): Boolean = {
+    listCount += 1
     val element = Node(value)
     if (head == null) {
       first(element)
@@ -124,7 +125,7 @@ class LinkedListImpl[T] {
       true
     }
 
-    else if (index > 0   && index < listCount  ) {
+    else if (index > 0 && index < listCount) {
 
       @tailrec
       def loop(current: Node[T], cIndex: Int = 0): Unit = {
@@ -137,7 +138,10 @@ class LinkedListImpl[T] {
       true
     }
 
-    else false
+    else {
+      listCount -= 1
+      false
+    }
   }
 
 }
@@ -186,6 +190,6 @@ object Main extends App {
   println()
 
   println("test insert function")
-  println(lk insert(100,-1))
+  println(lk insert(100, -1))
   lk.traverse foreach (element => println(element.value))
 }
