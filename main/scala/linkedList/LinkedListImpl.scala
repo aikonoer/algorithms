@@ -5,55 +5,55 @@ import scala.annotation.tailrec
 /**
   * Created by brianmomongan on 4/8/16.
   */
-case class Node[T](value: T, var next: Node[T] = null)
+case class Node[T](value: T, var next: Option[Node[T]] = None)
 
 class LinkedListImpl[T] {
 
-  private var head: Node[T] = null
-  private var tail: Node[T] = null
+  private var head: Option[Node[T]] = None
+  private var tail: Option[Node[T]] = None
   private var listCount: Int = 0
 
-
   private def first(element: Node[T]) = {
-    if (head == null) {
-      head = element
-      tail = element
+    if (head.isEmpty) {
+      head = Some(element)
+      tail = Some(element)
     }
   }
 
-  def append(value: T) = {
+  def add(value: T) = {
     listCount += 1
     val element = Node[T](value)
 
-    if (head == null) first(element)
+    if (head.isEmpty) first(element)
     else {
-      tail.next = element
-      tail = element
+      tail.get.next = Some(element)
+      tail = Some(element)
     }
   }
 
   def push(value: T) = {
     listCount += 1
     val element = Node[T](value)
-    if (head == null) first(element)
+
+    if (head.isEmpty) first(element)
     else {
       element.next = head
-      head = element
+      head = Some(element)
     }
   }
 
   def delete() = {
-    if (head != null) {
+    if (head.nonEmpty) {
 
       @tailrec
-      def loop(current: Node[T]): Unit = {
-        if (current.next == null) {
-          head = null
-          tail = null
+      def loop(current: Option[Node[T]]): Unit = {
+        if (current.get.next.isEmpty) {
+          head = None
+          tail = None
         }
-        else if (current.next.next != null) loop(current.next)
+        else if (current.get.next.get.next.nonEmpty) loop(current.get.next)
         else {
-          current.next = null
+          current.get.next = None
           tail = current
         }
       }
@@ -63,133 +63,134 @@ class LinkedListImpl[T] {
   }
 
   def pop() = {
-    if (head != null) {
-      head = head.next
+    if (head.nonEmpty) {
+      head = head.get.next
       listCount -= 1
     }
   }
 
   def length: Int = listCount
 
-  def traverse: List[Node[T]] = {
+  def traverse: Option[List[Node[T]]] = {
 
     @tailrec
-    def loop(node: Node[T], list: List[Node[T]] = List[Node[T]]()): List[Node[T]] = {
-      if (node.next != null) loop(node.next, node :: list) else node :: list
+    def loop(node: Option[Node[T]], list: List[Node[T]] = List[Node[T]]()): Option[List[Node[T]]] = node match {
+      case Some(node) => node.next match {
+        case Some(next) => loop(Some(next), node :: list)
+        case None => Option(node :: list)
+      }
+      case None => None
     }
-    loop(head).reverse
+
+    loop(head)
   }
 
   def count(value: T): Int = {
 
-    @tailrec
-    def loop(current: Node[T], acc: Int = 0): Int = {
-      if (current != null) {
-        if (current.value == value) loop(current.next, acc + 1) else loop(current.next, acc)
+    def loop(current: Option[Node[T]], acc: Int = 0): Int = current match {
+      case Some(node) => node.value match {
+        case data if data == value => loop(node.next, acc + 1)
+        case _ => loop(node.next, acc)
       }
-      else acc
+      case None => acc
     }
+
     loop(head)
   }
 
-  def get(value: Int): Int = {
-    if (head != null) {
+  /*
+  * input : index
+  * output: value
+  * */
+  def get(value: Int): Option[T] = value match {
+
+    case index if index == listCount - 1 => tail match {
+      case Some(node) => Some(node.value)
+      case None => None
+    }
+
+    case index if 0 until listCount contains index => {
 
       @tailrec
-      def loop(current: Node[T], index: Int = 0): Int = {
-        if (current == null) -1
-        else if (current.value == value) index else loop(current.next, index + 1)
+      def loop(current: Option[Node[T]], ind: Int = 0): Option[T] = current match {
+        case Some(node) if ind == index => Some(node.value)
+        case Some(node) if ind != index => loop(node.next, ind + 1)
+        case None => None
       }
       loop(head)
     }
-    else -1
+    case _ => None
   }
 
-  def insert(value: T, index: Int): Boolean = {
-    listCount += 1
-    val element = Node(value)
-    if (head == null) {
-      first(element)
-      true
-    }
+  def insert(value: T, index: Int) = {
 
-    else if (index == 0) {
-      element.next = head
-      head = element
-      true
-    }
+    lazy val element = Node(value)
 
-    else if (index == listCount) {
-      tail.next = element
-      tail = element
-      true
-    }
-
-    else if (index > 0 && index < listCount) {
+    if (index == 0) push(value)
+    else if (index == listCount) add(value)
+    else if (0 until listCount contains index) {
 
       @tailrec
-      def loop(current: Node[T], cIndex: Int = 0): Unit = {
-        if (index - 1 == cIndex) {
-          element.next = current.next
-          current.next = element
-        } else loop(current.next, cIndex + 1)
+      def loop(current: Option[Node[T]], cIndex: Int = 0): Unit = cIndex match {
+        case cInd if cInd == index - 1 => {
+          element.next = current.get.next
+          current.get.next = Some(element)
+        }
+        case _ => loop(current.get.next, cIndex + 1)
       }
       loop(head)
-      true
-    }
-
-    else {
-      listCount -= 1
-      false
+      listCount += 1
     }
   }
-
 }
 
 object Main extends App {
 
+  def printAll = {
+    lk.traverse match {
+      case Some(el) => el.reverse foreach (each => println(each.value))
+      case None => "Nothing found"
+    }
+    println("length: " + lk.length)
+    println()
+  }
+
   val lk = new LinkedListImpl[Int]
-  lk append 3
-  lk append 4
-  lk append 51
-  lk append 21
+
   println("elements added to tail")
-  lk.traverse foreach (element => println(element.value))
-  println("length: " + lk.length)
-  println()
+  lk add 3
+  lk add 4
+  lk add 51
+  lk add 21
+  printAll
 
   println("elements deleted from tail")
   lk.delete()
   lk.delete()
-  lk.traverse foreach (element => println(element.value))
-  println("length: " + lk.length)
-  println()
+  printAll
 
   println("elements added to head")
-  lk push 200
-  lk.traverse foreach (element => println(element.value))
-  println("length: " + lk.length)
-  println()
+  lk push 20
+  lk push 21
+  printAll
 
   println("elements deleted from head")
   lk pop()
-  lk.traverse foreach (element => println(element.value))
-  println("length: " + lk.length)
-  println()
+  printAll
 
   println("test count function")
-  lk append 1
-  println("count: " + lk.count(2))
-  lk.traverse foreach (element => println(element.value))
-  println()
+  lk add 1
+  lk add 3
+  printAll
+  println("count: " + lk.count(3))
 
+  printAll
   println("test get function")
-  println("get: " + lk.get(1))
-  lk push 1
-  println("get: " + lk.get(10))
+  println("get: " + lk.get(5))
   println()
 
   println("test insert function")
-  println(lk insert(100, -1))
-  lk.traverse foreach (element => println(element.value))
+  lk insert(100, 5)
+  printAll
+
 }
