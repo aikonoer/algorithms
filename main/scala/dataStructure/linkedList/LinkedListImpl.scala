@@ -144,7 +144,7 @@ class LinkedListImpl[T] {
   }
 }
 
-object Main extends App {
+object LinkedListMain extends App {
 
   def printAll = {
     lk.traverse match {

@@ -13,7 +13,6 @@ class SelectionSortImpl[T <: Int] {
     val len = list.length
 
     def swap(list: List[T], end: Int, largest: Int): List[T] = {
-      println(list)
       val mutate = scala.collection.mutable.ArraySeq(list: _*)
       val swapped = mutate(largest)
       mutate(largest) = mutate(end)
@@ -39,7 +38,7 @@ class SelectionSortImpl[T <: Int] {
   }
 }
 
-object Main extends App {
+object SelectionSortMain extends App {
 
   val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 1 :: 2 :: 4 :: Nil
   val selection = new SelectionSortImpl[Int]

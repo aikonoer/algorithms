@@ -37,9 +37,10 @@ class InsertionSortImpl[T <: Int] {
 }
 
 
-object Main extends App {
+object InsertionSortMain extends App {
 
-  val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 1 :: 2 :: 4 :: Nil
+  //val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 1 :: 2 :: 4 :: Nil
+  val list = (1 to 10).toList
   val insert = new InsertionSortImpl[Int]
   println(insert.sort(list))
 

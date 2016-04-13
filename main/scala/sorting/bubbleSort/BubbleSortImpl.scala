@@ -37,7 +37,7 @@ class BubbleSortImpl[T <: Int] {
   }
 }
 
-object Main extends App {
+object BubbleSortMain extends App {
 
   val bubble = new BubbleSortImpl[Int]
   val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 1 :: 2 :: 4 :: Nil
