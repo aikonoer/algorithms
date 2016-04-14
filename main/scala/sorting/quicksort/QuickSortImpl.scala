@@ -12,6 +12,7 @@ class QuickSortImpl[T <: Int] {
     val len = list.length - 1
 
     def swap(list: List[T], index: Int, right: Int): List[T] = {
+      //      println(list)
       val mutate = scala.collection.mutable.ArraySeq(list: _*)
       val swapped = mutate(right)
       mutate(right) = mutate(index)
@@ -25,23 +26,25 @@ class QuickSortImpl[T <: Int] {
         else if (list(right) >= list(index)) loop(list, index, left, right - 1, end)
         else loop(swap(list, left, right), index, left + 1, right - 1, end)
       }
-      else recursion(swap(list, index, right), right)
+      else recursion(swap(list, index, right), right, end)
     }
 
-    def recursion(list: List[T], right: Int = len): List[T] = {
-      if (right > 1) loop(list, 0, 0, right, right)
-      //      else if (right < len - 2) loop(list, right + 1, right + 1)
-      else list
+    def recursion(list: List[T], index: Int = len, end: Int = len): List[T] = {
+      println(list)
+      if (index == 0) list
+      else {
+        loop(list, 0, 0, index - 1, index - 1)
+        loop(list, index + 1, index + 1, end, end)
+      }
     }
-
-    recursion(list)
+    loop(list)
   }
+
 }
 
 object QuickSortMain extends App {
 
-  val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 1 :: 2 :: 4 :: 1 :: 10 :: 8 :: 17 :: 0 :: Nil
-  //2:46
+  val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 9 :: 1 :: 4 :: 2 :: 7 :: Nil
 
   println(list)
   val quick = new QuickSortImpl[Int]
