@@ -1,4 +1,4 @@
-package sorting.insertionSort
+package sorting.insertionsort
 
 import scala.annotation.tailrec
 

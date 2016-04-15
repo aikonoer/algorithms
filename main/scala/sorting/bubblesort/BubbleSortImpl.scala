@@ -1,4 +1,4 @@
-package sorting.bubbleSort
+package sorting.bubblesort
 
 import scala.annotation.tailrec
 
