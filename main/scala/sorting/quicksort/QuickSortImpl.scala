@@ -1,7 +1,5 @@
 package sorting.quicksort
 
-import scala.annotation.tailrec
-
 /**
   * Created by brianmomongan on 4/13/16.
   */
@@ -12,7 +10,6 @@ class QuickSortImpl[T <: Int] {
     val len = list.length - 1
 
     def swap(list: List[T], index: Int, right: Int): List[T] = {
-      //      println(list)
       val mutate = scala.collection.mutable.ArraySeq(list: _*)
       val swapped = mutate(right)
       mutate(right) = mutate(index)
@@ -21,20 +18,19 @@ class QuickSortImpl[T <: Int] {
     }
 
     def loop(list: List[T], index: Int = 0, left: Int = 0, right: Int = len, end: Int = len): List[T] = {
-      if (left <= right) {
+      if (index > end) list
+      else if (left <= right) {
         if (list(left) <= list(index)) loop(list, index, left + 1, right, end)
         else if (list(right) >= list(index)) loop(list, index, left, right - 1, end)
         else loop(swap(list, left, right), index, left + 1, right - 1, end)
       }
-      else recursion(swap(list, index, right), right, end)
+      else recursion(swap(list, index, right), index, right, end)
     }
 
-    def recursion(list: List[T], index: Int = len, end: Int = len): List[T] = {
-      println(list)
-      if (index == 0) list
+    def recursion(list: List[T], start: Int, mid: Int, end: Int): List[T] = {
+      if (start == end) list
       else {
-        loop(list, 0, 0, index - 1, index - 1)
-        loop(list, index + 1, index + 1, end, end)
+        loop(loop(list, start, start, mid - 1, mid - 1), mid + 1, mid + 1, end, end)
       }
     }
     loop(list)
@@ -44,9 +40,12 @@ class QuickSortImpl[T <: Int] {
 
 object QuickSortMain extends App {
 
-  val list: List[Int] = 5 :: 2 :: 0 :: 9 :: 9 :: 1 :: 4 :: 2 :: 7 :: Nil
-
-  println(list)
+  val list1: List[Int] = 5 :: 2 :: 0 :: 9 :: 9 :: 1 :: 4 :: 2 :: 7 :: Nil
+  val list2 = (0 to 20).toList.reverse
+  println(list1)
   val quick = new QuickSortImpl[Int]
-  println(quick.sort(list))
+  println(quick.sort(list1))
+
+  println(list2)
+  println(quick.sort(list2))
 }
